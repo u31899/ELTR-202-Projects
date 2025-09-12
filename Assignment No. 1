@@ -1,0 +1,40 @@
+;include <PICF4620.inc>      ;required config files.
+;uildstart: ;Program label
+
+;movlw 0x16 
+;mov
+;addwf ; "You're definately going to use that" f looks for file  address
+			; d looks for working register
+			; a bank or bsr?
+
+#include <P18F4620.inc> ;required config files
+build_start:
+	movlw	0x16			;move literal 0x16 into WREG
+	movwf	0x25, A			;Store 0x16 in GPR 025
+	movlw	0x1c 			;add literal 0x1c to register
+	addwf	0x25, W, A		;Takes the value from 0x25 and adds it to working register (0x1c). W to over
+	movwf	0x35, A			;Store WREG value in GPR 035
+	movlw	0xc8			;add literal 0xc8 to WREG
+	addwf	0x35, W, A		;Add value stored in 0x35 (0x32) to WREG value (C8)
+	movwf	0x45, A			;Stores value in WREG into GPR 045
+	movwf 	0x40, A			;Takes the value from 045 and copies it to 0x40
+	decf	0x40, F			;Takes GPR 0x40 (same as 0x45) and decriments by 1)
+	movwf	0x30, A			;should move value from wreg (0xFA) and store in gpr 0x30
+	incf	0x30, F			;increase value stored in gpr 0x30 by 1
+	movlb	0x01			;Change bank to 1
+	movwf	0x75, BANKED	; Add working register value to bsr 175
+	;movwf 	0x70, BANKED	; Add register value to bsr 170
+	movlw	0x0a			; add binary 1010 (0A) into working register
+	addwf	0x75, W, A		;add value in 0x75 to wreg
+
+; at this point, I am supposed to add 0A to FA (Working reg to value stored in 0x75) and store the value in 0x70.
+; For some reason I am not able to do this. My presumption is that it is not working, as the combined value in hex
+; is 104, which exceeds the file size for that address. 
+	movlw	0x00			;Sets the working register value to 0
+
+	
+	
+	
+	
+nop 
+end
