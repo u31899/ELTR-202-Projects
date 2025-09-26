@@ -1,0 +1,76 @@
+#include <P18F4620.inc> ;required config files
+
+;Requirements:
+;	1. Look at values stored in GPRs 030-03F
+;	2. When a value is even, count it in GPR 040
+;	3. When a value is odd, count it in GPR 041
+;	4. When a value is zero, count it in GPR 032 (but not in GPR 040)
+;	5. The program shoul dconclude when all relevant GPRs have been inspected
+;Added Challenge:
+;	1. Use labels to indicate specific memory locations.
+;	2. Use as few assembly instruction lines as possible
+
+
+
+EvenValues 	set	0x40		;Set labels
+OddValues 	set	0x41
+ZeroValues	set	0x42
+
+
+build_start:
+
+
+dbg:						; Quickly clear out all variables, so don't need to manually clear
+
+	CLRF 	EvenValues
+	CLRF 	OddValues
+	CLRF	ZeroValues
+	MOVLW	0X00			
+	
+program_int:
+	LFSR	0, 0X30
+	MOVLW	0x11		; max value found when counting from 1 at gpr030 to 03f
+	MOVWF	0x01		; store value for reference for later
+	MOVLW	0x01		; add 1 as starting number to wreg
+	MOVWF	0x00		; store value for later reference
+
+
+dbg_populate_GPR_030_03F:	
+;purpose of this section is to fill out gpr 030-03f with incrementing numbers
+
+	
+	MOVWF	POSTINC0	; increment lfr by 1
+	ADDWF	0x00, A
+	nop
+	
+	CPFSEQ	0x01, A
+	bra dbg_populate_GPR_030_03F
+	MOVLW	0x00
+	bra MainLoop
+
+	
+
+MainLoop:					;This will be the loop that runs through GPR 030-03F to test
+
+;cautioned against using these below, but instead using line skips found in assembly conditional
+;pdf found on brightspace
+;	BNN	AddEven				;branch if not negative
+;	BN	AddOdd				;branch if negative
+;	BZ	AddZero				;branch if zero
+
+
+
+
+
+AddZero:
+
+AddEven:
+
+AddOdd:
+
+ProgramEnd:
+
+	nop
+	nop
+
+	end
