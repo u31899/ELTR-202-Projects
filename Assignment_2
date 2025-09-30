@@ -30,31 +30,33 @@ dbg:						; Quickly clear out all variables, so don't need to manually clear
 	CLRF	0X01			
 	
 program_int:
-	LFSR	0, 0X31		; Set fsr value to 0x2F
-	MOVLW	0x10		; max value found when counting from 1 at gpr030 to 03f
+	LFSR	0, 0X2F		; Set fsr value to 0x2F
+	MOVLW	0x11		; max value found when counting from 1 at gpr030 to 03f
 	MOVWF	0x01		; store value for reference for later
 	MOVLW	0x01		; add 1 as starting number to wreg
 	MOVWF	0x00		; store value for later reference
+	MOVLW	0X00		; set wreg to 0x00
 
 
 dbg_populate_GPR_030_03F:	
 ;purpose of this section is to fill out gpr 030-03f with incrementing numbers
 
-	
-	MOVWF	POSTINC0	; increment lfr by 1
-	ADDWF	0x00, A		; adds 1 to wreg 
+;	MOVWF	POSTINC0	; increment lfr by 1
+;	ADDWF	0x00, A		; adds 1 to wreg 
 	;nop
-	
-	CPFSEQ	0x01, A		; compare wreg to number at gpr 0x01 (11). skip next line if same
-	bra dbg_populate_GPR_030_03F
-	MOVLW	0x00		; set wreg to 0x00
-	LFSR	0, 0X2F		; sets fsr to 0x30
-	bra TestZero
-
+;	
+;	CPFSEQ	0x01, A		; compare wreg to number at gpr 0x01 (11). skip next line if same
+;	bra dbg_populate_GPR_030_03F
+;	MOVLW	0x00		; set wreg to 0x00
+;	LFSR	0, 0X2F		; sets fsr to 0x30
+;	bra TestZero
 	
 
 TestZero:					;This will be the loop that runs through GPR 030-03F to test
-	MOVWF	POSTINC0		; increase lfr by 1
+	ADDWF	0X00, A
+	MOVWF	POSTINC0,		; increase lfr by 1
+	CPFSGT	0X01, A			; compare wreg to gpr 0x01. Skip if less than. 
+	BRA		ProgramEnd
 	TSTFSZ	INDF0, A		; test file at fsr 0. If file is = to 0, then skip next line. 
 	BRA		TestEvenOdd
 	BRA		AddZero
