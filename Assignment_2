@@ -4,7 +4,7 @@
 ;	1. Look at values stored in GPRs 030-03F
 ;	2. When a value is even, count it in GPR 040
 ;	3. When a value is odd, count it in GPR 041
-;	4. When a value is zero, count it in GPR 032 (but not in GPR 040)
+;	4. When a value is zero, count it in GPR 042 (but not in GPR 040)
 ;	5. The program shoul dconclude when all relevant GPRs have been inspected
 ;Added Challenge:
 ;	1. Use labels to indicate specific memory locations.
@@ -25,10 +25,12 @@ dbg:						; Quickly clear out all variables, so don't need to manually clear
 	CLRF 	EvenValues
 	CLRF 	OddValues
 	CLRF	ZeroValues
-	MOVLW	0X00			
+	MOVLW	0X00
+	CLRF	0X00
+	CLRF	0X01			
 	
 program_int:
-	LFSR	0, 0X30
+	LFSR	0, 0X2F		; Set fsr value to 0x2F
 	MOVLW	0x11		; max value found when counting from 1 at gpr030 to 03f
 	MOVWF	0x01		; store value for reference for later
 	MOVLW	0x01		; add 1 as starting number to wreg
@@ -40,17 +42,31 @@ dbg_populate_GPR_030_03F:
 
 	
 	MOVWF	POSTINC0	; increment lfr by 1
-	ADDWF	0x00, A
-	nop
+	ADDWF	0x00, A		; adds 1 to wreg 
+	;nop
 	
-	CPFSEQ	0x01, A
+	CPFSEQ	0x01, A		; compare wreg to number at gpr 0x01 (11). skip next line if same
 	bra dbg_populate_GPR_030_03F
-	MOVLW	0x00
-	bra MainLoop
+	MOVLW	0x00		; set wreg to 0x00
+	LFSR	0, 0X2F		; sets fsr to 0x30
+	bra TestZero
 
 	
 
-MainLoop:					;This will be the loop that runs through GPR 030-03F to test
+TestZero:					;This will be the loop that runs through GPR 030-03F to test
+	MOVWF	POSTINC0		; increase lfr by 1
+	TSTFSZ	INDF0, A		; test file at fsr 0. If file is = to 0, then skip next line. 
+	BRA		TestEvenOdd
+	BRA		AddZero
+
+TestEvenOdd:
+	BTFSC	INDF0, 0, A		; Test bit zero at fsr 0. Skip if odd. 
+	BRA		AddEven
+	BRA		AddOdd
+	
+nop
+nop
+nop
 
 ;cautioned against using these below, but instead using line skips found in assembly conditional
 ;pdf found on brightspace
@@ -64,9 +80,22 @@ MainLoop:					;This will be the loop that runs through GPR 030-03F to test
 
 AddZero:
 
-AddEven:
+	INCF	0X42		; increase gpr 0x42 by 1
+	BRA		TestZero
 
+nop
+nop
+nop
+
+AddEven:
+	INCF	0X40
+	BRA		TestZero
+nop
+nop
+nop
 AddOdd:
+	INCF	0X41
+	BRA		TestZero
 
 ProgramEnd:
 
