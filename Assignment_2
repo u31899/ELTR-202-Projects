@@ -30,8 +30,8 @@ dbg:						; Quickly clear out all variables, so don't need to manually clear
 	CLRF	0X01			
 	
 program_int:
-	LFSR	0, 0X2F		; Set fsr value to 0x2F
-	MOVLW	0x11		; max value found when counting from 1 at gpr030 to 03f
+	LFSR	0, 0X31		; Set fsr value to 0x2F
+	MOVLW	0x10		; max value found when counting from 1 at gpr030 to 03f
 	MOVWF	0x01		; store value for reference for later
 	MOVLW	0x01		; add 1 as starting number to wreg
 	MOVWF	0x00		; store value for later reference
@@ -61,8 +61,8 @@ TestZero:					;This will be the loop that runs through GPR 030-03F to test
 
 TestEvenOdd:
 	BTFSC	INDF0, 0, A		; Test bit zero at fsr 0. Skip if odd. 
-	BRA		AddEven
 	BRA		AddOdd
+	BRA		AddEven
 	
 nop
 nop
