@@ -33,7 +33,7 @@ program_int:
 	LFSR	0, 0X2F		; Set fsr value to 0x2F
 	MOVLW	0x11		; max value found when counting from 1 at gpr030 to 03f
 	MOVWF	0x01		; store value for reference for later
-	MOVLW	0x01		; add 1 as starting number to wreg
+	MOVLW	0x01		; add 1 as starting number to wreg. 0x00 may interfere with fsr0, as it starts at 0x00?
 	MOVWF	0x00		; store value for later reference
 	MOVLW	0X00		; set wreg to 0x00
 
