@@ -22,6 +22,7 @@ build_start:
 
 dbg:						; Quickly clear out all variables, so don't need to manually clear
 
+
 	CLRF 	EvenValues
 	CLRF 	OddValues
 	CLRF	ZeroValues
@@ -38,20 +39,6 @@ program_int:
 	MOVLW	0X00		; set wreg to 0x00
 
 
-dbg_populate_GPR_030_03F:	
-;purpose of this section is to fill out gpr 030-03f with incrementing numbers
-
-;	MOVWF	POSTINC0	; increment lfr by 1
-;	ADDWF	0x00, A		; adds 1 to wreg 
-	;nop
-;	
-;	CPFSEQ	0x01, A		; compare wreg to number at gpr 0x01 (11). skip next line if same
-;	bra dbg_populate_GPR_030_03F
-;	MOVLW	0x00		; set wreg to 0x00
-;	LFSR	0, 0X2F		; sets fsr to 0x30
-;	bra TestZero
-	
-
 TestZero:					;This will be the loop that runs through GPR 030-03F to test
 	ADDWF	0X00, A
 	MOVWF	POSTINC0,		; increase lfr by 1
@@ -66,35 +53,15 @@ TestEvenOdd:
 	BRA		AddOdd
 	BRA		AddEven
 	
-nop
-nop
-nop
-
-;cautioned against using these below, but instead using line skips found in assembly conditional
-;pdf found on brightspace
-;	BNN	AddEven				;branch if not negative
-;	BN	AddOdd				;branch if negative
-;	BZ	AddZero				;branch if zero
-
-
-
-
-
 AddZero:
 
 	INCF	0X42		; increase gpr 0x42 by 1
 	BRA		TestZero
 
-nop
-nop
-nop
-
 AddEven:
 	INCF	0X40
 	BRA		TestZero
-nop
-nop
-nop
+	
 AddOdd:
 	INCF	0X41
 	BRA		TestZero
@@ -102,6 +69,4 @@ AddOdd:
 ProgramEnd:
 
 	nop
-	nop
-
 	end
